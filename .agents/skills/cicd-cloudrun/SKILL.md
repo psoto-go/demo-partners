@@ -27,6 +27,14 @@ The build and deployment process follows these steps:
 
 ## Execution Commands
 
+### Primary Automated Build & Deploy Script (Recommended)
+
+Run the direct Cloud Build deployment script (bypasses CLI interactive prompts via direct REST API and ADC OAuth2 refresh):
+
+```bash
+python3 scripts/deploy_cloudbuild.py
+```
+
 ### Manual Build & Deploy via gcloud CLI
 
 ```bash

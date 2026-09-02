@@ -34,7 +34,7 @@ For any task that modifies code or configuration:
 
 ### Phase 3: CI/CD Activation & Cloud Run Deployment
 1. Upon receiving user approval, activate the [`.agents/skills/cicd-cloudrun/SKILL.md`](../skills/cicd-cloudrun/SKILL.md) skill.
-2. Trigger the GCP Cloud Build pipeline to build and deploy both Cloud Run services:
+2. Trigger the direct automated GCP Cloud Build pipeline to build and deploy both Cloud Run services:
    ```bash
-   gcloud builds submit --config=cloudbuild.yaml --project=prj-ge-grand-prix .
+   python3 scripts/deploy_cloudbuild.py
    ```
