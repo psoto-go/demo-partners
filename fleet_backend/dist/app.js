@@ -199,6 +199,22 @@ function FleetDashboard() {
     return { color: 'text-emerald-400 font-medium bg-emerald-950/40 border border-emerald-500/20 px-2 py-0.5 rounded text-[10px]', label: 'STABLE' };
   };
 
+  // Theme mode state ('dark' | 'light') with localStorage persistence
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('fleet_theme') || 'dark';
+    }
+    return 'dark';
+  });
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('fleet_theme', nextTheme);
+    }
+  };
+
   // Metrics calculation
   const totalShipments = shipments.length;
   const activeHolds = shipments.filter((s) => !s.isResolved).length;
@@ -208,38 +224,75 @@ function FleetDashboard() {
   const totalCargoValue = cargoDetails.reduce((sum, item) => sum + (item.quantity * item.unit_price_eur), 0);
   const totalCargoItems = cargoDetails.reduce((sum, item) => sum + item.quantity, 0);
 
+  const isDark = theme === 'dark';
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 md:p-8 selection:bg-amber-500 selection:text-black relative">
+    <div className={`min-h-screen font-sans p-6 md:p-8 relative transition-colors duration-300 ${
+      isDark ? 'bg-slate-950 text-slate-100 selection:bg-amber-500 selection:text-black' : 'bg-slate-100 text-slate-900 selection:bg-amber-500 selection:text-black'
+    }`}>
       
       {/* Premium Glassmorphic Header with KPIs */}
-      <header className="max-w-7xl mx-auto mb-10 p-6 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-slate-800/80 shadow-2xl glass-panel">
+      <header className={`max-w-7xl mx-auto mb-10 p-6 rounded-2xl backdrop-blur-md border transition-colors glass-panel ${
+        isDark ? 'bg-slate-900/40 border-slate-800/80 shadow-2xl' : 'bg-white/80 border-slate-200 shadow-xl shadow-slate-200/50'
+      }`}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-[10px] font-bold tracking-widest text-emerald-400 uppercase">Live Operations</p>
+              <p className="text-[10px] font-bold tracking-widest text-emerald-500 uppercase">Live Operations</p>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+            <h1 className={`text-3xl font-extrabold tracking-tight ${
+              isDark ? 'bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent' : 'text-slate-900'
+            }`}>
               Fleet Operations Command Center
             </h1>
-            <p className="text-xs text-slate-400 mt-1">Real-time transportation monitoring, customs hold resolution, and cargo audits linked directly to BigQuery</p>
+            <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+              Real-time transportation monitoring, customs hold resolution, and cargo audits linked directly to BigQuery
+            </p>
           </div>
           
-          {/* Performance KPIs */}
-          <div className="flex items-center gap-4">
-            <div className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800/50">
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Total Fleet</p>
-              <p className="text-lg font-bold text-slate-200">{totalShipments}</p>
+          {/* Performance KPIs & Theme Switcher */}
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                isDark
+                  ? 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-amber-300'
+                  : 'bg-white hover:bg-slate-50 border-slate-300 text-slate-800 shadow-sm'
+              }`}
+            >
+              {isDark ? (
+                <>
+                  <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <span>Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                  <span>Dark Mode</span>
+                </>
+              )}
+            </button>
+            <div className={`px-4 py-2 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800/50' : 'bg-slate-50 border-slate-200'}`}>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Total Fleet</p>
+              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{totalShipments}</p>
             </div>
             <div className={`px-4 py-2 rounded-xl border transition-colors ${
-              activeHolds > 0 ? 'bg-red-950/20 border-red-500/25' : 'bg-slate-900 border-slate-800/50'
+              activeHolds > 0 
+                ? (isDark ? 'bg-red-950/20 border-red-500/25' : 'bg-red-50 border-red-200')
+                : (isDark ? 'bg-slate-900 border-slate-800/50' : 'bg-slate-50 border-slate-200')
             }`}>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">On Hold</p>
-              <p className={`text-lg font-bold ${activeHolds > 0 ? 'text-red-500' : 'text-slate-300'}`}>{activeHolds}</p>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>On Hold</p>
+              <p className={`text-lg font-bold ${activeHolds > 0 ? 'text-red-500' : (isDark ? 'text-slate-300' : 'text-slate-700')}`}>{activeHolds}</p>
             </div>
-            <div className="px-4 py-2 rounded-xl bg-emerald-950/20 border border-emerald-500/25">
-              <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Cleared</p>
-              <p className="text-lg font-bold text-emerald-400">{clearedCount}</p>
+            <div className={`px-4 py-2 rounded-xl border ${isDark ? 'bg-emerald-950/20 border-emerald-500/25' : 'bg-emerald-50 border-emerald-200'}`}>
+              <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Cleared</p>
+              <p className="text-lg font-bold text-emerald-500">{clearedCount}</p>
             </div>
           </div>
         </div>
@@ -247,7 +300,9 @@ function FleetDashboard() {
 
       {/* Grid Header Actions */}
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
-        <h2 className="text-lg font-bold tracking-tight text-slate-300 uppercase tracking-wider text-xs">Active Logistics Cards</h2>
+        <h2 className={`text-xs font-bold tracking-wider uppercase ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+          Active Logistics Cards
+        </h2>
         <button
           onClick={() => {
             setFormError(null);
@@ -267,18 +322,18 @@ function FleetDashboard() {
         {loading && shipments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-10 h-10 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mb-4" />
-            <p className="text-slate-400 text-sm">Loading BigQuery fleet data...</p>
+            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Loading BigQuery fleet data...</p>
           </div>
         ) : error && shipments.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-red-950/20 border border-red-500/30 text-center max-w-xl mx-auto">
+          <div className={`p-8 rounded-2xl border text-center max-w-xl mx-auto ${isDark ? 'bg-red-950/20 border-red-500/30' : 'bg-red-50 border-red-200'}`}>
             <svg className="w-12 h-12 text-red-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <h3 className="text-base font-bold text-red-400 mb-1">Connection Error</h3>
-            <p className="text-xs text-slate-400 mb-4">{error}</p>
+            <h3 className="text-base font-bold text-red-500 mb-1">Connection Error</h3>
+            <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{error}</p>
             <button 
               onClick={fetchShipments}
-              className="px-4 py-2 rounded-xl bg-red-950/50 hover:bg-red-900/50 border border-red-500/30 text-xs font-semibold text-red-200 transition-colors animate-pulse"
+              className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-xs font-semibold text-white transition-colors animate-pulse"
             >
               Retry Connection
             </button>
@@ -288,10 +343,14 @@ function FleetDashboard() {
             {shipments.map((truck) => (
               <div
                 key={truck.id}
-                className={`group relative overflow-hidden rounded-2xl bg-slate-900/40 border-y border-r border-slate-800/80 shadow-lg hover:shadow-2xl hover:bg-slate-900/70 transition-all duration-300 transform hover:-translate-y-1 glass-panel ${
+                className={`group relative overflow-hidden rounded-2xl border-y border-r shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 glass-panel ${
+                  isDark
+                    ? 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900/80'
+                    : 'bg-white border-slate-200 hover:border-slate-300 shadow-slate-200/50'
+                } ${
                   !truck.isResolved 
                     ? 'border-l-4 border-l-red-500 glow-card' 
-                    : 'border-l-4 border-l-slate-600' 
+                    : 'border-l-4 border-l-slate-400' 
                 }`}
               >
                 {/* Subtle backglow for active customs holds */}
@@ -302,15 +361,17 @@ function FleetDashboard() {
                 <div className="p-6">
                   {/* ID and Status Badge */}
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700/50">
+                    <span className={`font-mono text-xs font-bold px-2.5 py-1 rounded-md border ${
+                      isDark ? 'bg-slate-800 text-slate-200 border-slate-700/50' : 'bg-slate-100 text-slate-800 border-slate-300'
+                    }`}>
                       {truck.id}
                     </span>
                     <span
                       className={`text-xs font-extrabold tracking-wide uppercase flex items-center gap-1.5 ${
-                        !truck.isResolved ? 'text-red-500' : 'text-slate-400' 
+                        !truck.isResolved ? 'text-red-500' : (isDark ? 'text-slate-400' : 'text-slate-500')
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${!truck.isResolved ? 'bg-red-500 animate-pulse' : 'bg-slate-500'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${!truck.isResolved ? 'bg-red-500 animate-pulse' : 'bg-slate-400'}`} />
                       {truck.status}
                     </span>
                   </div>
@@ -318,20 +379,20 @@ function FleetDashboard() {
                   {/* Cargo Details */}
                   <div className="space-y-4 mb-6">
                     <div>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Route</p>
-                      <p className="text-sm font-semibold text-slate-200 mt-0.5">{truck.route}</p>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Route</p>
+                      <p className={`text-sm font-semibold mt-0.5 ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{truck.route}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Cargo</p>
-                      <p className="text-xs font-medium text-slate-300 mt-0.5">{truck.cargo}</p>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Cargo</p>
+                      <p className={`text-xs font-medium mt-0.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{truck.cargo}</p>
                     </div>
                   </div>
 
                   {/* Hold Reason (Displayed ONLY if isResolved is false) */}
                   {!truck.isResolved && truck.reason && (
-                    <div className="mb-6 p-4 rounded-xl bg-red-950/20 border border-red-500/10">
-                      <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">Hold Reason</p>
-                      <p className="text-xs text-red-200/90 leading-relaxed font-semibold">{truck.reason}</p>
+                    <div className={`mb-6 p-4 rounded-xl border ${isDark ? 'bg-red-950/20 border-red-500/20' : 'bg-red-50 border-red-200'}`}>
+                      <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Hold Reason</p>
+                      <p className={`text-xs leading-relaxed font-semibold ${isDark ? 'text-red-200/90' : 'text-red-800'}`}>{truck.reason}</p>
                     </div>
                   )}
 
@@ -542,7 +603,7 @@ function FleetDashboard() {
                   value={newCargo}
                   onChange={(e) => setNewCargo(e.target.value)}
                   placeholder="e.g. Paracetamol & Amoxicillin"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-slate-100 text-sm placeholder-slate-600 outline-none transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-amber-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-slate-100 text-sm placeholder-slate-600 outline-none transition-all"
                   required
                 />
               </div>
@@ -599,6 +660,7 @@ function FleetDashboard() {
     </div>
   );
 }
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<FleetDashboard />);
