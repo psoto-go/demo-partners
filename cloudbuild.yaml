@@ -1,0 +1,93 @@
+steps:
+  # =========================================================================
+  # SERVICE 1: fleet-command-center (Backend API & Logistics Dashboard)
+  # =========================================================================
+  # Build Docker Image for fleet-command-center
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/fleet-command-center:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/fleet-command-center:latest'
+      - './fleet_backend'
+    id: 'build-fleet-backend'
+
+  # Push Docker Image for fleet-command-center
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/fleet-command-center:$COMMIT_SHA']
+    id: 'push-fleet-backend-sha'
+    waitFor: ['build-fleet-backend']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/fleet-command-center:latest']
+    id: 'push-fleet-backend-latest'
+    waitFor: ['build-fleet-backend']
+
+  # Deploy fleet-command-center to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'fleet-command-center'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/fleet-command-center:$COMMIT_SHA'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+    id: 'deploy-fleet-backend'
+    waitFor: ['push-fleet-backend-sha']
+
+  # =========================================================================
+  # SERVICE 2: fleet-mcp-server (Custom FastMCP SSE/HTTP Server)
+  # =========================================================================
+  # Build Docker Image for fleet-mcp-server
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/fleet-mcp-server:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/fleet-mcp-server:latest'
+      - './fleet_mcp_server'
+    id: 'build-fleet-mcp'
+
+  # Push Docker Image for fleet-mcp-server
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/fleet-mcp-server:$COMMIT_SHA']
+    id: 'push-fleet-mcp-sha'
+    waitFor: ['build-fleet-mcp']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/fleet-mcp-server:latest']
+    id: 'push-fleet-mcp-latest'
+    waitFor: ['build-fleet-mcp']
+
+  # Deploy fleet-mcp-server to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'fleet-mcp-server'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/fleet-mcp-server:$COMMIT_SHA'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+    id: 'deploy-fleet-mcp'
+    waitFor: ['push-fleet-mcp-sha']
+
+images:
+  - 'gcr.io/$PROJECT_ID/fleet-command-center:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/fleet-command-center:latest'
+  - 'gcr.io/$PROJECT_ID/fleet-mcp-server:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/fleet-mcp-server:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

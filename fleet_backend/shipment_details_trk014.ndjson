@@ -1,0 +1,12 @@
+{"truck_id": "TRK-014", "product_id": "MED-014-01", "name": "Aspirin", "category": "Analgesic", "manufacture_date": "2026-02-01", "expiry_date": "2028-12-20", "quantity": 1500, "unit_price_eur": 3.19}
+{"truck_id": "TRK-014", "product_id": "MED-014-02", "name": "Paracetamol", "category": "Analgesic", "manufacture_date": "2026-02-23", "expiry_date": "2028-04-16", "quantity": 677, "unit_price_eur": 4.77}
+{"truck_id": "TRK-014", "product_id": "MED-014-03", "name": "Ibuprofen", "category": "Anti-inflammatory", "manufacture_date": "2026-03-31", "expiry_date": "2028-06-06", "quantity": 588, "unit_price_eur": 5.71}
+{"truck_id": "TRK-014", "product_id": "MED-014-04", "name": "Omeprazole", "category": "Gastrointestinal", "manufacture_date": "2026-01-27", "expiry_date": "2028-10-27", "quantity": 785, "unit_price_eur": 6.94}
+{"truck_id": "TRK-014", "product_id": "MED-014-05", "name": "Metformin", "category": "Antidiabetic", "manufacture_date": "2026-03-14", "expiry_date": "2028-07-03", "quantity": 738, "unit_price_eur": 7.72}
+{"truck_id": "TRK-014", "product_id": "MED-014-06", "name": "Lisinopril", "category": "Cardiovascular", "manufacture_date": "2026-05-15", "expiry_date": "2028-07-18", "quantity": 1091, "unit_price_eur": 10.76}
+{"truck_id": "TRK-014", "product_id": "MED-014-07", "name": "Amoxicillin", "category": "Antibiotic", "manufacture_date": "2026-06-03", "expiry_date": "2029-03-10", "quantity": 768, "unit_price_eur": 12.24}
+{"truck_id": "TRK-014", "product_id": "MED-014-08", "name": "Amlodipine", "category": "Cardiovascular", "manufacture_date": "2026-01-29", "expiry_date": "2028-04-27", "quantity": 1110, "unit_price_eur": 13.69}
+{"truck_id": "TRK-014", "product_id": "MED-014-09", "name": "Albuterol", "category": "Respiratory", "manufacture_date": "2026-04-12", "expiry_date": "2028-08-27", "quantity": 509, "unit_price_eur": 17.21}
+{"truck_id": "TRK-014", "product_id": "MED-014-10", "name": "Atorvastatin", "category": "Cardiovascular", "manufacture_date": "2026-03-10", "expiry_date": "2028-05-28", "quantity": 1009, "unit_price_eur": 21.0}
+{"truck_id": "TRK-014", "product_id": "MED-014-11", "name": "Gabapentin", "category": "Anticonvulsant", "manufacture_date": "2026-03-25", "expiry_date": "2028-06-25", "quantity": 764, "unit_price_eur": 29.66}
+{"truck_id": "TRK-014", "product_id": "MED-014-12", "name": "Insulin Glargine", "category": "Antidiabetic", "manufacture_date": "2026-02-21", "expiry_date": "2028-11-04", "quantity": 936, "unit_price_eur": 41.67}
